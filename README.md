@@ -81,11 +81,3 @@ ccgs-<name>/
 ccgs-<name>.skill  # the same folder, zipped, for installation
 ```
 
-## Differences from Claude Code Game Studios
-
-This is a direct adaptation, not a port with feature parity claims. Concretely:
-
-- **Skills only, no subagents.** The original runs 49 subagents on Claude Code. This repo has none; each skill bundles the role files it needs in `roles/`, and Claude either spawns a general-purpose Cowork subagent with that role file prepended, or adopts the role inline.
-- **No hooks.** The original enforces checks (JSON validation, naming conventions, no hardcoded magic numbers, session-state updates) via `settings.json` hooks. Cowork has no hook mechanism, so every skill's "Cowork Adaptation Notes" block says to do these checks manually.
-- **Unity-first.** The original routes across Unity, Godot, and Unreal. This adaptation targets Unity (C#) only and ignores the other engine branches.
-- **No path-scoped rules file.** The 11 rules from the original's rule engine are folded into each skill's own instructions rather than living in a separate rules system.
