@@ -1,8 +1,8 @@
 # Claude Cowork Game Studio
 
-A skills-only pipeline for solo/small-team Unity game development on Claude Cowork, adapted from [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios).
+A skills-only pipeline for solo/small-team Unity game development on Claude Cowork
 
-![license](https://img.shields.io/badge/license-MIT-blue) ![skills](https://img.shields.io/badge/skills-18-brightgreen) ![engine](https://img.shields.io/badge/engine-Unity-black) ![built for](https://img.shields.io/badge/built%20for-Claude%20Cowork-orange)
+![skills](https://img.shields.io/badge/skills-18-brightgreen) ![engine](https://img.shields.io/badge/engine-Unity-black) ![built for](https://img.shields.io/badge/built%20for-Claude%20Cowork-orange)
 
 ## Why This Exists
 
@@ -62,7 +62,7 @@ Note: `ccgs-map-systems` and `ccgs-reverse-document` ship with newly authored te
 
 ## Getting Started
 
-This runs on **Claude Cowork**, not the Claude Code CLI.
+This runs on **Claude Cowork**
 
 1. Connect this repo's folder in Cowork.
 2. Install the `.skill` files you want (each is a zip of a `ccgs-<name>/` or `<name>/` folder containing `SKILL.md` plus its bundled `refs/`, `roles/`, `templates/`).
@@ -81,23 +81,3 @@ ccgs-<name>/
 ccgs-<name>.skill  # the same folder, zipped, for installation
 ```
 
-## Differences from Claude Code Game Studios
-
-This is a direct adaptation, not a port with feature parity claims. Concretely:
-
-- **Skills only, no subagents.** The original runs 49 subagents on Claude Code. This repo has none; each skill bundles the role files it needs in `roles/`, and Claude either spawns a general-purpose Cowork subagent with that role file prepended, or adopts the role inline.
-- **No hooks.** The original enforces checks (JSON validation, naming conventions, no hardcoded magic numbers, session-state updates) via `settings.json` hooks. Cowork has no hook mechanism, so every skill's "Cowork Adaptation Notes" block says to do these checks manually.
-- **Unity-first.** The original routes across Unity, Godot, and Unreal. This adaptation targets Unity (C#) only and ignores the other engine branches.
-- **No path-scoped rules file.** The 11 rules from the original's rule engine are folded into each skill's own instructions rather than living in a separate rules system.
-
-Credit: [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios), the source project this adapts. License: MIT.
-
-## Design Philosophy
-
-Same theoretical foundation as the original: MDA (Mechanics-Dynamics-Aesthetics), Self-Determination Theory, Flow, Bartle player types, and Verification-Driven Development (a gate checks the work before the next phase starts, rather than catching problems at the end).
-
-This adaptation adds one more principle on top: anti-drift by construction. Numeric values in code must match what the design docs say, not the other way around. Engine-specific code and plain rule logic are kept separate so rules can be checked without booting Unity. And every check in this pipeline is expected to cite the actual doc or code location as evidence, not rely on what a session "remembers" from earlier in the conversation.
-
-## Credits & License
-
-Adapted from [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios). Released under the MIT license.
