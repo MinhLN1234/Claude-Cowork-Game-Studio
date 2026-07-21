@@ -2,7 +2,7 @@
 
 A skills-only pipeline for solo/small-team Unity game development on Claude Cowork
 
-![license](https://img.shields.io/badge/license-MIT-blue) ![skills](https://img.shields.io/badge/skills-18-brightgreen) ![engine](https://img.shields.io/badge/engine-Unity-black) ![built for](https://img.shields.io/badge/built%20for-Claude%20Cowork-orange)
+![skills](https://img.shields.io/badge/skills-18-brightgreen) ![engine](https://img.shields.io/badge/engine-Unity-black) ![built for](https://img.shields.io/badge/built%20for-Claude%20Cowork-orange)
 
 ## Why This Exists
 
