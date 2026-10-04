@@ -28,7 +28,28 @@ When a test fails, read what it's actually asserting before deciding the test is
 
 If the fix touches a numeric rule or threshold (health, timing/cooldown, transition type, spawn/wave activation), check whether that value is referenced anywhere else — other scripts, other docs — and keep them in sync rather than fixing one occurrence. Fixing one place and missing a duplicate is a common way the same bug returns later.
 
-## Step 5: Report, don't just "mark done"
+## Step 5: Independent re-check from a fresh context (review mode `full` only)
+
+The context that wrote or fixed the code shares its blind spots: it knows what the code was *meant* to do and reads that intent into what it actually does. In `full` review mode, get a second verdict from a context that has never seen this conversation. (Pattern adapted from ECC's `santa-method` and fresh-context `code-reviewer`, github.com/affaan-m/ECC, MIT.)
+
+Resolve the review mode: `--review [full|lean|solo]` argument if given, else `production/review-mode.txt`, else `lean`. In `lean` or `solo`, skip this step and write "Independent re-check: skipped ([mode] mode)" in the report. The user can always ask for it explicitly in any mode.
+
+In `full` mode:
+
+1. Launch one general-purpose subagent via the Agent tool. Give it **only**:
+   - the story file path and the governing GDD section and ADR paths from Step 1,
+   - the list of files changed for this story (paths only; it reads them itself),
+   - the test files for this story.
+   Do **not** pass your criteria list, your Step 2 mapping, your Step 3 conclusions, or any summary of this conversation. Its value comes from not knowing them.
+2. Brief it: "Read the story and its GDD/ADR references. Write down each acceptance criterion yourself. For each one, find the code and test that satisfy it and give PASS / FAIL / UNCLEAR with file:line evidence. Check every numeric value against the GDD, not against comments in the code. Do not edit any file."
+3. Compare its verdicts with yours, criterion by criterion:
+   - Both PASS: done.
+   - Any disagreement, or any UNCLEAR: re-read the evidence yourself. If the subagent is right, treat it as a FAIL and go back to Step 3 or 4. If you are confident it is wrong, keep your verdict but list the disagreement in the report with both pieces of evidence, so the user decides.
+   - A criterion the subagent found that you did not list in Step 1: you misread the story. Add it and check it.
+4. Run at most two rounds (initial re-check, then one re-check after fixes). If they still disagree after that, stop and escalate to the user rather than looping.
+
+
+## Step 6: Report, don't just "mark done"
 
 Before handing off to `ccgs-story-done` for the completion ritual, give a clear pass/fail per acceptance criterion:
 
@@ -45,6 +66,9 @@ Before handing off to `ccgs-story-done` for the completion ritual, give a clear 
 
 ## Fixes applied
 [what was changed and why, including any other code/doc locations updated for consistency]
+
+## Independent re-check
+[full mode: agreed on N/M criteria; each disagreement with both verdicts and evidence, and how it was resolved. Otherwise: "skipped ([mode] mode)"]
 ```
 
-Only treat a story as genuinely ready for `ccgs-story-done` once every criterion is a clear PASS or the user has explicitly accepted a documented deviation.
+Only treat a story as genuinely ready for `ccgs-story-done` once every criterion is a clear PASS or the user has explicitly accepted a documented deviation, and, in `full` mode, every re-check disagreement has been resolved or accepted by the user.
