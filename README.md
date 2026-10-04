@@ -2,7 +2,7 @@
 
 A skills-only pipeline for solo/small-team Unity game development on Claude Cowork
 
-![skills](https://img.shields.io/badge/skills-18-brightgreen) ![engine](https://img.shields.io/badge/engine-Unity-black) ![built for](https://img.shields.io/badge/built%20for-Claude%20Cowork-orange)
+![skills](https://img.shields.io/badge/skills-21-brightgreen) ![engine](https://img.shields.io/badge/engine-Unity-black) ![built for](https://img.shields.io/badge/built%20for-Claude%20Cowork-orange)
 
 ## Why This Exists
 
@@ -12,7 +12,7 @@ This skill set imposes a professional studio process on a Claude Cowork session.
 
 ## What's Included
 
-18 skills, grouped by pipeline stage. Every skill bundles its own `roles/`, `refs/`, and `templates/` folders where needed, so there is nothing else to install: no separate subagents, no hooks configuration.
+21 skills, grouped by pipeline stage. Every skill bundles its own `roles/`, `refs/`, and `templates/` folders where needed, so there is nothing else to install: no separate subagents, no hooks configuration.
 
 | Group | Skills |
 | ---- | ---- |
@@ -21,6 +21,7 @@ This skill set imposes a professional studio process on a Claude Cowork session.
 | Stories & sprints | `ccgs-create-epics`, `ccgs-sprint-plan`, `ccgs-story-readiness` |
 | Reviews & completion | `ccgs-code-review`, `ccgs-story-done`, `story-review-test-fix` |
 | Reverse engineering | `ccgs-reverse-document` |
+| Session & learning | `ccgs-save-session`, `ccgs-resume-session`, `ccgs-learn` |
 | Unity engineering | `unity-tdd-workflow`, `unity-clean-architecture-review`, `unity-bug-root-cause` |
 | Meta | `query-me` |
 
@@ -32,6 +33,12 @@ This skill set imposes a professional studio process on a Claude Cowork session.
 ```
 
 `/propagate-design-change` and `/reverse-document` are used out of band, whenever they're needed rather than as a fixed step.
+
+Every work session is wrapped by `/resume-session` at the start and `/save-session` at the end; `/learn` runs after a session that solved something worth keeping:
+
+```
+/resume-session -> [any pipeline step] -> /learn (optional) -> /save-session
+```
 
 - `/start`: first-time onboarding, figures out where you are and routes you to the right skill.
 - `/brainstorm`: guided ideation using MDA, player psychology, and verb-first design; produces a game concept doc.
@@ -48,17 +55,20 @@ This skill set imposes a professional studio process on a Claude Cowork session.
 - `/propagate-design-change`: after a GDD is revised, scans ADRs and the traceability index for decisions that may now be stale.
 - `/reverse-document`: generates a GDD section, ADR, or concept doc by working backwards from existing code or a prototype.
 - `unity-bug-root-cause`: traces a gameplay bug back to its originating decision point instead of patching the symptom.
+- `/save-session`: writes `production/session-state/active.md` (active story, what worked with evidence, what failed and why, decisions not yet in a GDD/ADR, exact next step) and archives the previous snapshot.
+- `/resume-session`: loads that snapshot, checks it against files, story status, and sprint on disk, and briefs before any work starts, including what not to retry.
+- `/learn`: extracts one reusable lesson from the session, routes design decisions to GDDs/ADRs instead, runs a Save / Absorb / Drop gate, and files it under `production/lessons/`.
 
 ## What's New in This Release
 
-- `ccgs-map-systems`: decompose a concept into systems, map dependencies, and produce the systems index that `/design-system` consumes.
-- `ccgs-consistency-check`: grep-first drift check across all GDDs and the entity registry, meant to run after every new GDD.
-- `ccgs-story-readiness`: pre-dev gate that verdicts a story READY / NEEDS WORK / BLOCKED before implementation starts.
-- `ccgs-propagate-design-change`: change-impact scan that flags ADRs gone stale after a GDD edit.
-- `ccgs-reverse-document`: builds a GDD, ADR, or concept doc backwards from existing code or a prototype, for undocumented features.
-- Added `unity-bug-root-cause` to the repo (previously drafted but not committed), joining `unity-tdd-workflow` and `unity-clean-architecture-review` as generalized, engine-focused Unity skills usable independently of the CCGS pipeline.
+v0.3.0 borrows three patterns from [ECC](https://github.com/affaan-m/ECC) (MIT), rewritten for Cowork (no hooks, everything stored in the project folder), and fixes broken paths left over from the Claude Code version.
 
-Note: `ccgs-map-systems` and `ccgs-reverse-document` ship with newly authored template files (`templates/systems-index.md` for the former; three templates for the latter) that did not exist in the source material for this release. They are marked as draft in-file and should be reviewed before relying on them in production.
+- `ccgs-save-session` and `ccgs-resume-session`: every skill's Cowork notes asked for `production/session-state/active.md` to be updated at the start and end of each session, but no skill did it. These two do. Adapted from ECC's `/save-session` and `/resume-session`.
+- `ccgs-learn`: manual, gated version of ECC's `/learn-eval`. ECC's automatic instinct learning needs Claude Code hooks, which Cowork does not run.
+- `story-review-test-fix`: new Step 5, an independent re-check by a subagent that sees only the story, GDD/ADR, and changed files, never the dev conversation. Runs in `full` review mode only. Pattern from ECC's `santa-method` and fresh-context `code-reviewer`.
+- Path fix: 11 skills referenced `.claude/docs/director-gates.md`, `.claude/docs/templates/systems-index.md`, or `.claude/docs/technical-preferences.md`, which do not exist in Cowork. They now point to the bundled `refs/` and `templates/` folders. `ccgs-map-systems` could not find its systems-index template before this fix.
+
+See `CHANGELOG.md` for v0.2.0 and earlier.
 
 ## Getting Started
 
@@ -79,5 +89,14 @@ ccgs-<name>/
   roles/         # role files adopted inline in place of Claude Code subagents
   templates/     # document templates the skill writes from
 ccgs-<name>.skill  # the same folder, zipped, for installation
+```
+
+The session and learning skills write only inside your project folder:
+
+```
+production/session-state/active.md     # current snapshot (ccgs-save-session)
+production/session-state/archive/      # superseded snapshots, never edited
+production/lessons/<slug>.md           # one lesson per file (ccgs-learn)
+production/lessons/INDEX.md            # one line per lesson
 ```
 

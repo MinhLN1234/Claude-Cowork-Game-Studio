@@ -63,3 +63,27 @@ git cherry-pick <commit-sha>
 - `story-review-test-fix/SKILL.md`, `unity-clean-architecture-review/SKILL.md`, `unity-tdd-workflow/SKILL.md`: unchanged in this release, but if you already had local edits to these three, check they were not overwritten by a strategy-A merge.
 
 **Known gap carried into this release, not introduced by it:** `ccgs-map-systems/templates/systems-index.md` and the three templates under `ccgs-reverse-document/templates/` were authored during this upgrade because no bundled template existed for them upstream. They are marked "DRAFT TEMPLATE, needs human review" in-file. Review them against your project's actual GDD conventions before treating them as final.
+
+## v0.2.0 -> v0.3.0
+
+**Safe to drop in as new files (no merge needed):**
+
+- `ccgs-save-session/` and `ccgs-save-session.skill`
+- `ccgs-resume-session/` and `ccgs-resume-session.skill`
+- `ccgs-learn/` and `ccgs-learn.skill`
+
+**Replace these packages (path fix only, no behavior change):** re-install the `.skill` file over the old one for `ccgs-brainstorm`, `ccgs-consistency-check`, `ccgs-create-architecture`, `ccgs-create-epics`, `ccgs-design-system`, `ccgs-map-systems`, `ccgs-propagate-design-change`, `ccgs-reverse-document`, `ccgs-sprint-plan`, `ccgs-story-done`, `ccgs-story-readiness`. If you edited any of them locally, re-apply only the substitutions instead of overwriting:
+
+```
+.claude/docs/director-gates.md            ->  refs/director-gates.md
+.claude/docs/templates/systems-index.md   ->  templates/systems-index.md
+`.claude/docs/technical-preferences.md` if configured
+    ->  `docs/architecture/architecture.md` or the project's technical preferences doc, if one exists
+```
+
+**Needs manual merge if you edited it locally:**
+
+- `story-review-test-fix/SKILL.md`: new Step 5 inserted, old Step 5 renumbered to Step 6, report template gains an "Independent re-check" section.
+- `README.md`, `CHANGELOG.md`: updated for this release.
+
+**Project folder:** nothing to migrate. If `production/session-state/active.md` already exists from `ccgs-story-done` extracts, the first `ccgs-save-session` run archives it and carries its extract blocks into the new snapshot.
